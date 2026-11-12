@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bilim Olami</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf1fb;--card:#fff;--ink:#12243d;--mut:#5d6f87;--pr:#1d4ed8;--sun:#ffb703;--ok:#15803d;--no:#c2272d;--bd:#cfdcf0}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1a2d;--card:#162842;--ink:#eaf1fb;--mut:#9fb0c8;--pr:#7aa2ff;--bd:#2a4166;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:500;min-height:100vh;display:flex;justify-content:center}
+main{width:100%;max-width:560px;padding:20px 16px 40px}
+h1,h2{font-weight:900;margin:0}
+button,input{font:inherit}
+.hero{padding:56px 4px 24px}
+.hero h1{font-size:46px;line-height:1.05;letter-spacing:-1px}
+.hero p{font-size:19px;color:var(--mut);margin:14px 0 28px;max-width:28ch}
+.btn{display:block;width:100%;padding:16px;border:0;border-radius:14px;background:var(--pr);color:#fff;font-weight:900;font-size:18px;cursor:pointer}
+.btn.sun{background:var(--sun);color:#12243d}
+.btn.ghost{background:none;color:var(--mut);font-weight:700;font-size:15px;padding:10px;text-decoration:underline}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:14px}
+label{display:block;font-weight:700;margin:12px 0 6px}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--bd);background:var(--bg);color:var(--ink);font-size:17px}
+input:focus,button:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+.msg{color:var(--no);font-weight:700;min-height:22px;margin:10px 0 0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top b{font-size:18px}.top small{color:var(--mut)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.tab{padding:12px;border-radius:12px;border:2px solid var(--bd);background:var(--card);color:var(--ink);font-weight:900;cursor:pointer}
+.tab.on{background:var(--pr);border-color:var(--pr);color:#fff}
+.sub{width:100%;text-align:left;padding:18px;margin-bottom:12px;border-radius:16px;border:2px solid var(--bd);background:var(--card);color:var(--ink);font-weight:900;font-size:19px;cursor:pointer}
+.bar{height:10px;background:var(--bd);border-radius:9px;overflow:hidden;margin:8px 0 14px}
+.bar i{display:block;height:100%;background:var(--sun);transition:width .3s}
+.q{font-size:21px;font-weight:900;line-height:1.3;margin:0 0 16px}
+.opt{display:block;width:100%;text-align:left;padding:14px;margin-bottom:10px;border-radius:14px;border:2px solid var(--bd);background:var(--bg);color:var(--ink);font-size:17px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(21,128,61,.2)}
+.opt.no{border-color:var(--no);background:rgba(194,39,45,.2)}
+.fb{font-weight:900;min-height:24px;margin:2px 0 10px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--bd)}
+.row:last-child{border:0}
+.row.me{background:rgba(255,183,3,.18);border-radius:12px;padding-left:10px;padding-right:10px}
+.rk{width:34px;font-size:22px;font-weight:900;text-align:center}
+.nm{flex:1;font-weight:900}.nm small{display:block;color:var(--mut);font-weight:500}
+.pt{font-weight:900;font-size:20px;color:var(--pr)}
+.big{font-size:60px;font-weight:900;text-align:center;margin:6px 0}
+.c{text-align:center}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,collection,query,orderBy,limit,getDocs,runTransaction} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const cfg={
+  apiKey:"AIzaSyBaTEVbax9ljwlfUzKNrNbdXkw8NBLsCAU",
+  authDomain:"bilim-olami.firebaseapp.com",
+  projectId:"bilim-olami",
+  storageBucket:"bilim-olami.firebasestorage.app",
+  messagingSenderId:"291703309242",
+  appId:"1:291703309242:web:82618729a5645d96b5d383"
+};
+const fb=initializeApp(cfg),auth=getAuth(fb),db=getFirestore(fb);
+
+const DATA={
+"🔬 Tabiiy fan":[
+["Quyosh sistemasidagi eng katta sayyora qaysi?","Yupiter","Saturn","Neptun","Yer"],
+["Suvning kimyoviy formulasi qanday?","H₂O","CO₂","O₂","NaCl"],
+["Kattalar tanasida nechta suyak bor?","206","106","306","156"],
+["Yorug’lik tezligi taxminan qancha?","300 000 km/s","30 000 km/s","3 000 km/s","3 000 000 km/s"],
+["O’simliklar fotosintezda qaysi gazni yutadi?","Karbonat angidrid","Kislorod","Azot","Vodorod"],
+["Eng qattiq tabiiy modda qaysi?","Olmos","Temir","Oltin","Kvars"]],
+"🏺 Tarix":[
+["Amir Temur qaysi yilda tug’ilgan?","1336","1405","1220","1500"],
+["Mirzo Ulug’bek rasadxonasi qaysi shaharda qurilgan?","Samarqand","Buxoro","Xiva","Toshkent"],
+["Al-Xorazmiy qaysi fanning asoschisi hisoblanadi?","Algebra","Biologiya","Geografiya","Kimyo"],
+["O’zbekiston mustaqilligi qachon e’lon qilingan?","1991-yil 1-sentabr","1990-yil 1-may","1992-yil 8-dekabr","1989-yil 21-oktabr"],
+["Buyuk Ipak yo’li qaysi qit’alarni bog’lagan?","Osiyo va Yevropa","Amerika va Afrika","Avstraliya va Osiyo","Afrika va Antarktida"],
+["Ibn Sinoning mashhur tibbiy asari qaysi?","Tib qonunlari","Boburnoma","Xamsa","Zafarnoma"]]
+};
+
+const app=document.getElementById("app");
+let user=null,profile=null;
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const clear=()=>{app.innerHTML=""};
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+
+onAuthStateChanged(auth,async u=>{
+  user=u;
+  if(!u){showLogin();return}
+  clear();app.appendChild(el("p","c","Yuklanmoqda…"));
+  try{
+    const s=await getDoc(doc(db,"users",u.uid));
+    if(s.exists()){profile=s.data();showHome("test")}else showJoin();
+  }catch(e){showError(e)}
+});
+
+function showError(e){
+  clear();
+  const c=el("div","card");
+  c.append(el("h2",null,"Xatolik"),el("p",null,"Sahifani yangilang. Muammo takrorlansa, yaratuvchiga yozing."),el("p","msg",e.code||e.message));
+  const b=el("button","btn ghost","Chiqish");b.onclick=()=>signOut(auth);c.appendChild(b);app.appendChild(c);
+}
+
+function showLogin(){
+  clear();
+  const h=el("div","hero");
+  h.append(el("h1",null,"Bilim Olami"),el("p",null,"Kitob o’qi, test yech, reytingda yuksal."));
+  const b=el("button","btn sun","Google bilan kirish");
+  const m=el("p","msg");
+  b.onclick=async()=>{
+    m.textContent="";
+    try{await signInWithPopup(auth,new GoogleAuthProvider())}
+    catch(e){m.textContent="Kirib bo’lmadi: "+(e.code||e.message)}
+  };
+  h.append(b,m);app.appendChild(h);
+}
+
+function showJoin(){
+  clear();
+  const c=el("div","card");
+  c.append(el("h2",null,"Maktabga qo’shilish"),el("p",null,"Ismingiz, sinfingiz va maktab kodini kiriting. Kodni o’qituvchidan oling."));
+  const f=(l,v,ph)=>{const w=el("div");w.append(el("label",null,l));const i=el("input");i.value=v||"";i.placeholder=ph||"";w.appendChild(i);c.appendChild(w);return i};
+  const n=f("Ism",user.displayName,"Ismingiz"),k=f("Sinf","","Masalan: 9-A"),cd=f("Maktab kodi","","Kod");
+  const m=el("p","msg");
+  const b=el("button","btn","Qo’shilish");
+  b.style.marginTop="14px";
+  b.onclick=async()=>{
+    const name=n.value.trim(),cls=k.value.trim(),code=cd.value.trim();
+    if(!name||!cls||!code){m.textContent="Hamma maydonni to’ldiring.";return}
+    b.disabled=true;m.textContent="";
+    try{
+      await setDoc(doc(db,"users",user.uid),{name,class:cls,code});
+      profile={name,class:cls};showHome("test");
+    }catch(e){
+      b.disabled=false;
+      m.textContent=e.code==="permission-denied"?"Maktab kodi noto’g’ri. Kodni o’qituvchidan so’rang.":"Xatolik: "+(e.code||e.message);
+    }
+  };
+  const o=el("button","btn ghost","Boshqa akkaunt bilan kirish");o.onclick=()=>signOut(auth);
+  c.append(m,b,o);app.appendChild(c);
+}
+
+function showHome(tab){
+  clear();
+  const t=el("div","top"),w=el("div");
+  w.append(el("b",null,profile.name),el("small",null," · "+profile.class));
+  const o=el("button","btn ghost","Chiqish");o.style.width="auto";o.onclick=()=>signOut(auth);
+  t.append(w,o);
+  const tabs=el("div","tabs");
+  [["test","📝 Test"],["top","🏆 Reyting"]].forEach(([id,l])=>{
+    const b=el("button","tab"+(tab===id?" on":""),l);b.onclick=()=>showHome(id);tabs.appendChild(b);
+  });
+  const body=el("div");
+  app.append(t,tabs,body);
+  tab==="test"?pickSubject(body):showTop(body);
+}
+
+function pickSubject(body){
+  body.innerHTML="";
+  body.appendChild(el("p",null,"Fanni tanlang:"));
+  Object.keys(DATA).forEach(n=>{
+    const b=el("button","sub",n+" ("+DATA[n].length+" savol)");b.onclick=()=>runQuiz(body,n);body.appendChild(b);
+  });
+}
+
+function runQuiz(body,subj){
+  const qs=shuffle(DATA[subj]);let i=0,score=0,locked=false;
+  const show=()=>{
+    locked=false;const q=qs[i];body.innerHTML="";
+    const c=el("div","card");
+    const bar=el("div","bar"),fill=el("i");fill.style.width=(i/qs.length*100)+"%";bar.appendChild(fill);
+    c.append(el("small",null,"Savol "+(i+1)+"/"+qs.length+" · ⭐ "+score),bar,el("p","q",q[0]));
+    const fbk=el("div","fb"),nx=el("button","btn","");nx.hidden=true;
+    shuffle(q.slice(1)).forEach(t=>{
+      const b=el("button","opt",t);
+      b.onclick=()=>{
+        if(locked)return;locked=true;
+        c.querySelectorAll(".opt").forEach(x=>{if(x.textContent===q[1])x.classList.add("ok")});
+        if(t===q[1]){score++;fbk.textContent="✅ To’g’ri!"}
+        else{b.classList.add("no");fbk.textContent="❌ To’g’ri javob: "+q[1]}
+        nx.hidden=false;nx.textContent=i+1<qs.length?"Keyingi savol":"Natijani ko’rish";
+        nx.onclick=()=>{i++;i<qs.length?show():finish()};
+      };
+      c.appendChild(b);
+    });
+    c.append(fbk,nx);body.appendChild(c);
+  };
+  const finish=async()=>{
+    body.innerHTML="";
+    const c=el("div","card c");
+    c.append(el("div","big",score+"/"+qs.length),el("p",null,"Natija saqlanmoqda…"));
+    body.appendChild(c);
+    let ok=true;
+    try{
+      const ref=doc(db,"scores",user.uid);
+      await runTransaction(db,async t=>{
+        const s=await t.get(ref);const old=s.exists()?s.data().points:0;
+        t.set(ref,{name:profile.name,class:profile.class,points:old+score});
+      });
+    }catch(e){ok=false}
+    c.lastChild.textContent=ok?"Ballar reytingga qo’shildi! 🎉":"Natijani saqlab bo’lmadi. Internetni tekshiring.";
+    const a=el("button","btn","Yana o’ynash");a.onclick=()=>runQuiz(body,subj);
+    const r=el("button","btn ghost","Reytingni ko’rish");r.onclick=()=>showHome("top");
+    c.append(a,r);
+  };
+  show();
+}
+
+async function showTop(body){
+  body.innerHTML="";body.appendChild(el("p","c","Yuklanmoqda…"));
+  try{
+    const s=await getDocs(query(collection(db,"scores"),orderBy("points","desc"),limit(20)));
+    body.innerHTML="";
+    const c=el("div","card");
+    if(s.empty){c.appendChild(el("p","c","Hali hech kim ball to’plamagan. Birinchi bo’ling!"))}
+    let r=0;
+    s.forEach(d=>{
+      r++;const x=d.data();
+      const row=el("div","row"+(d.id===user.uid?" me":""));
+      const nm=el("div","nm",x.name);nm.appendChild(el("small",null,x.class));
+      row.append(el("div","rk",r===1?"🥇":r===2?"🥈":r===3?"🥉":String(r)),nm,el("div","pt",String(x.points)));
+      c.appendChild(row);
+    });
+    body.appendChild(c);
+  }catch(e){body.innerHTML="";body.appendChild(el("p","msg","Reytingni yuklab bo’lmadi: "+(e.code||e.message)))}
+}
+</script>
+</body>
+</html>
